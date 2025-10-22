@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025년도 제11기 훈련생 온라인 지원</title>
+
+    <style>
+        /* 기본 스타일 (이전과 동일) */
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            overflow: hidden; 
+        }
+        .header {
+            text-align: center;
+            padding: 30px 30px 20px 30px;
+            border-bottom: 2px solid #000;
+        }
+        h1 { font-size: 26px; font-weight: bold; margin: 0; }
+
+        /* 탭 네비게이션 (이전과 동일) */
+        .step-navigation {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f9f9f9;
+            border-bottom: 1px solid #ddd;
+        }
+        .step-tab {
+            padding: 15px 20px;
+            cursor: pointer;
+            color: #888;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .step-tab.active {
+            color: #0056b3;
+            border-bottom-color: #007bff;
+        }
+
+        /* 폼 섹션 (이전과 동일) */
+        .form-step {
+            display: none; 
+            padding: 30px;
+            animation: fadeIn 0.5s;
+        }
+        .form-step.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 폼 공통 스타일 (이전과 동일) */
+        h2 {
+            font-size: 22px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 8px;
+            color: #0056b3;
+        }
+        .info-list { list-style-type: none; padding-left: 0; }
+        .info-list li { margin-bottom: 10px; font-size: 16px; }
+        .info-list strong { display: inline-block; width: 100px; font-weight: bold; }
+        fieldset { border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
+        legend { font-size: 18px; font-weight: bold; color: #333; padding: 0 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        label .required-star { color: red; }
+        input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+            width: 100%;
+            padding: 12px; 
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        textarea { resize: vertical; min-height: 150px; }
+        .gender-group label { display: inline-block; margin-right: 20px; font-weight: normal; }
+        .gender-group input[type="radio"] { margin-right: 5px; }
+        .agreement-group { padding: 15px; background-color: #f9f9f9; border-radius: 5px; }
+        .agreement-group label { display: inline-block; margin-left: 10px; font-weight: normal; }
+        .warning-message { color: #d93025; font-size: 13px; margin-top: 5px; display: none; }
+        .char-counter { text-align: right; font-size: 13px; color: #666; margin-top: 5px; }
+
+        /* 하단 버튼 (이전과 동일) */
+        .form-navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            border-top: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .nav-btn {
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .prev-btn { background-color: #6c757d; color: white; }
+        .prev-btn:hover { background-color: #5a6268; }
+        .next-btn { background-color: #007bff; color: white; }
+        .next-btn:hover { background-color: #0056b3; }
+        button[type="submit"] { background-color: #28a745; color: white; }
+        button[type="submit"]:hover { background-color: #218838; }
+        .prev-btn[disabled], .next-btn[disabled] { visibility: hidden; }
+
+        /* 안내 섹션 (이전과 동일) */
+        .info-block {
+            background-color: #fdfbf4;
+            border: 1px solid #eeeadd;
+            border-radius: 5px;
+            padding: 20px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        /* === [안내창(모달) 스타일] === (유지) */
+        .modal {
+            display: none; 
+            position: fixed;
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: modalFadeIn 0.3s;
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            animation: modalSlideIn 0.3s;
+        }
+        .modal-content h2 { margin-top: 0; color: #0056b3; }
+        .modal-content p {
+            font-size: 16px;
+            line-height: 1.7;
+            margin-bottom: 25px;
+            white-space: pre-wrap; 
+        }
+        .close-button {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-button:hover { color: black; }
+        #closeModalBtn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            float: right;
+            font-size: 16px;
+        }
+        #closeModalBtn:hover { background-color: #0056b3; }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes modalSlideIn {
+            from { transform: translateY(-30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h1>2025년도 제11기 훈련생 온라인 지원</h1>
+        </div>
+
+        <div class="step-navigation">
+            <div class="step-tab active" data-step="1">1. 모집요강 확인</div>
+            <div class="step-tab" data-step="2">2. 개인정보 입력</div>
+            <div class="step-tab" data-step="3">3. 지원서류 작성</div>
+            <div class="step-tab" data-step="4">4. 동의 및 제출</div>
+        </div>
+
+        <form id="applicationForm" action="https://formspree.io/f/mblzqpee" method="POST">
+            <div id="step-1" class="form-step active">
+                <h2>1. 모집 요강</h2>
+                <ul class="info-list">
+                    <li><strong>모집 과정:</strong> [2025 예술의전당 무대음향 훈련생모집]</li>
+                    <li><strong>모집 기수:</strong> 제11기</li>
+                    <li><strong>교육 기간:</strong> 2025년10월27일 ~ 2026년03월27일 (총 6개월)</li>
+                    <li><strong>접수 기간:</strong> 2025년10월20일 ~ 2025년10월26일</li>
+                </ul>
+                <div class="info-block">
+                    <strong>안 내:</strong> 이번 기수는 총 40명을 선발하여 운용합니다. 그러나 중간 탈락자가 발생할 수 있기에 추가 인원 또 한도 예비 번호로 알려드릴 예정입니다 합격 메일에 "선발 "이라 있으면 합격자이시며 "예비 1"은 탈락자는 아니지만 정규 선발자 탈락 시 추가 합격이 될 수 있습니다 그 외" 탈락/다음 기수 때 지원해 주시라고 통보받으신 분들은 탈락자들입니다.
+                </div>
+            </div>
+
+            <div id="step-2" class="form-step">
+                <h2>2. 개인 정보</h2>
+                <fieldset>
+                    <legend>기본 정보</legend>
+                    <div class="form-group">
+                        <label for="fullName">성명 <span class="required-star">*</span></label>
+                        <input type="text" id="fullName" name="fullName" placeholder="이름을 입력하세요" required maxlength="10">
+                        <div id="fullNameWarning" class="warning-message">한글 또는 영문 이름만 입력해주세요.</div>
+                        <div class="char-counter" id="fullNameCounter">0 / 10</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="birthYear">출생년도 <span class="required-star">*</span></label>
+                        <select id="birthYear" name="birthYear" required>
+                            <option value="" disabled selected>출생년도를 선택하세요</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>성별 <span class="required-star">*</span></label>
+                        <div class="gender-group">
+                            <label for="male"><input type="radio" id="male" name="gender" value="남성" required> 남성</label>
+                            <label for="female"><input type="radio" id="female" name="gender" value="여성" required> 여성</label>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>연락 정보</legend>
+                    <div class="form-group">
+                        <label for="phone">연락처 <span class="required-star">*</span></label>
+                        <input type="tel" id="phone" name="phone" placeholder="'-' 없이 숫자만 입력하세요 (예: 01012345678)" required maxlength="11">
+                        <div id="phoneWarning" class="warning-message">숫자만 입력해주세요.</div>
+                        <div class="char-counter" id="phoneCounter">0 / 11</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">이메일 <span class="required-star">*</span></label>
+                        <input type="email" id="email" name="email" placeholder="예: example@email.com" required maxlength="30">
+                        <div id="emailWarning" class="warning-message">올바른 이메일 형식이 아닙니다.</div>
+                        <div class="char-counter" id="emailCounter">0 / 30</div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div id="step-3" class="form-step">
+                <h2>3. 지원 서류 작성</h2>
+                <fieldset>
+                    <legend>링크 제출</legend>
+                    <div class="form-group">
+                        <label for="resume_link">이력서 및 자기소개서 링크 <span class="required-star">*</span></label>
+                        <input type="text" id="resume_link" name="이력서 링크" placeholder="파일을 구글 드라이브 등에 올린 후, 공유 가능한 링크를 붙여넣어주세요." required maxlength="100">
+                        <div id="resumeLinkWarning" class="warning-message">'http://' 또는 'https://'로 시작하는 올바른 주소를 입력해주세요.</div>
+                        <div class="char-counter" id="resumeLinkCounter">0 / 100</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="portfolio_link">포트폴리오 링크 (선택사항)</label>
+                        <input type="text" id="portfolio_link" name="포트폴리오 링크" placeholder="포트폴리오가 있다면 공유 링크를 붙여넣어주세요." maxlength="200">
+                        <div id="portfolioLinkWarning" class="warning-message">'http://' 또는 'https://'로 시작하는 올바른 주소를 입력해주세요.</div>
+                        <div class="char-counter" id="portfolioLinkCounter">0 / 200</div>
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <legend>지원 동기</legend>
+                    <div class="form-group">
+                        <label for="coverLetter">지원 동기 <span class="required-star">*</span></label>
+                        <textarea id="coverLetter" name="지원 동기" placeholder="지원 동기를 1500자 이내로 작성해주세요." required maxlength="1500"></textarea>
+                        <div class="char-counter" id="coverLetterCounter">0 / 1500</div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div id="step-4" class="form-step">
+                <h2>4. 개인정보 수집 및 이용 동의</h2>
+                <fieldset>
+                    <legend>동의 확인</legend>
+                    <div style="padding: 15px; text-align: center;">
+                        <p>원활한 지원을 위해 개인정보 수집 및 이용 안내를 반드시 확인해주세요.</p>
+                        <button type="button" id="openPolicyBtn" style="padding: 10px 20px; font-size: 16px; cursor: pointer; border: 1px solid #007bff; background-color: #fff; color: #007bff; border-radius: 5px;">내용 확인하고 동의하기 (새 탭)</button>
+                    </div>
+                </fieldset>
+                
+                <div class="agreement-group">
+                    <input type="checkbox" id="agreement" name="agreement" required disabled>
+                    <label for="agreement">개인정보 수집 및 이용에 모두 동의합니다. <span class="required-star">*</span></label>
+                </div>
+            </div>
+
+            <div class="form-navigation">
+                <button type="button" class="nav-btn prev-btn" id="prevBtn" disabled>이전</button>
+                <button type="button" class="nav-btn next-btn" id="nextBtn">다음</button>
+                <button type="submit" class="nav-btn" id="submitBtn" style="display: none;">제출하기</button>
+            </div>
+        </form>
+
+        <div class="footer" style="text-align: center; padding: 20px; font-size: 13px; color: #888; border-top: 1px solid #eee;">
+            <p class="date" style="font-weight: bold; color: #555; margin-top: 0;">2025년 10월 13일</p>
+            <img src="fhrh.png" alt="예술의전당 로고" style="width: 200px; margin-top: 7px; margin-bottom: 15px;">
+            <br>
+            <a href="login.html" target="_blank" style="color: #888; text-decoration: none;">
+                [지원현황 보기 (관리자)]
+            </a>
+        </div>
+    </div>
+
+
+    <div id="noticeModal" class="modal">
+      <div class="modal-content">
+        <span class="close-button">&times;</span>
+        <h2>안 내</h2>
+        <p id="noticeModalContent">
+          </p>
+        <button id="closeModalBtn">확인</button>
+      </div>
+    </div>
+    <script>
+        // --- 1. 단계별 폼(마법사) 기능 (이전과 동일) ---
+        let currentStep = 1;
+        const totalSteps = 4;
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const stepTabs = document.querySelectorAll('.step-tab');
+        const formSteps = document.querySelectorAll('.form-step');
+
+        function showStep(stepNumber) {
+            formSteps.forEach(step => step.classList.remove('active'));
+            stepTabs.forEach(tab => tab.classList.remove('active'));
+            document.getElementById(`step-${stepNumber}`).classList.add('active');
+            document.querySelector(`.step-tab[data-step="${stepNumber}"]`).classList.add('active');
+            prevBtn.disabled = (stepNumber === 1);
+            nextBtn.style.display = (stepNumber === totalSteps) ? 'none' : 'inline-block';
+            submitBtn.style.display = (stepNumber === totalSteps) ? 'inline-block' : 'none';
+            currentStep = stepNumber;
+        }
+        nextBtn.addEventListener('click', () => { if (currentStep < totalSteps) { showStep(currentStep + 1); } });
+        prevBtn.addEventListener('click', () => { if (currentStep > 1) { showStep(currentStep - 1); } });
+        stepTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const stepToShow = parseInt(tab.getAttribute('data-step'), 10);
+                showStep(stepToShow);
+            });
+        });
+
+        // --- 2. 개인정보 동의 기능 (이전과 동일) ---
+        const openPolicyBtn = document.getElementById('openPolicyBtn');
+        const agreementCheckbox = document.getElementById('agreement');
+        openPolicyBtn.addEventListener('click', () => { 
+            window.open('policy.html', '_blank'); 
+            agreementCheckbox.disabled = false;
+            agreementCheckbox.checked = true; 
+        });
+
+        // --- 3. 유효성 검사 및 글자 수 카운터 (이전과 동일) ---
+        function validateInput(inputElement, regex, warningElement) {
+            inputElement.addEventListener('input', () => {
+                if (inputElement.value && !regex.test(inputElement.value)) {
+                    warningElement.style.display = 'block';
+                } else {
+                    warningElement.style.display = 'none';
+                }
+            });
+        }
+        function setupCharCounter(inputElement, counterElement) {
+            inputElement.addEventListener('input', () => {
+                const currentLength = inputElement.value.length;
+                const maxLength = inputElement.getAttribute('maxlength');
+                counterElement.textContent = `${currentLength} / ${maxLength}`;
+            });
+            counterElement.textContent = `0 / ${inputElement.getAttribute('maxlength')}`;
+        }
+        const fullNameInput = document.getElementById('fullName');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const resumeLinkInput = document.getElementById('resume_link');
+        const portfolioLinkInput = document.getElementById('portfolio_link');
+        const coverLetterInput = document.getElementById('coverLetter');
+        const fullNameWarning = document.getElementById('fullNameWarning');
+        const phoneWarning = document.getElementById('phoneWarning');
+        const emailWarning = document.getElementById('emailWarning');
+        const resumeLinkWarning = document.getElementById('resumeLinkWarning');
+        const portfolioLinkWarning = document.getElementById('portfolioLinkWarning');
+        const fullNameCounter = document.getElementById('fullNameCounter');
+        const phoneCounter = document.getElementById('phoneCounter');
+        const emailCounter = document.getElementById('emailCounter');
+        const resumeLinkCounter = document.getElementById('resumeLinkCounter');
+        const portfolioLinkCounter = document.getElementById('portfolioLinkCounter');
+        const coverLetterCounter = document.getElementById('coverLetterCounter');
+        const nameRegex = /^[가-힣a-zA-Z\s]+$/;
+        const phoneRegex = /^[0-9]+$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const urlRegex = /^(https?:\/\/)/;
+        validateInput(fullNameInput, nameRegex, fullNameWarning);
+        validateInput(phoneInput, phoneRegex, phoneWarning);
+        validateInput(emailInput, emailRegex, emailWarning);
+        validateInput(resumeLinkInput, urlRegex, resumeLinkWarning);
+        validateInput(portfolioLinkInput, urlRegex, portfolioLinkWarning);
+        setupCharCounter(fullNameInput, fullNameCounter);
+        setupCharCounter(phoneInput, phoneCounter);
+        setupCharCounter(emailInput, emailCounter);
+        setupCharCounter(resumeLinkInput, resumeLinkCounter);
+        setupCharCounter(portfolioLinkInput, portfolioLinkCounter);
+        setupCharCounter(coverLetterInput, coverLetterCounter);
+
+
+        // --- 4. 출생년도 드롭다운 (이전과 동일) ---
+        const birthYearSelect = document.getElementById('birthYear');
+        const maxYear = 2008;
+        const minYear = 1976;
+        for (let i = maxYear; i >= minYear; i--) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.innerText = i;
+            birthYearSelect.appendChild(option);
+        }
+
+        /*
+        ==================================================
+        === [ 5. (수정) JSON 파일 기반 안내창 기능 ] ===
+        ==================================================
+        */
+        const noticeModal = document.getElementById("noticeModal");
+        const noticeModalContent = document.getElementById("noticeModalContent");
+        const closeBtn = noticeModal.querySelector(".close-button");
+        const closeBtn2 = document.getElementById("closeModalBtn");
+
+        function closeModal() {
+          noticeModal.style.display = "none";
+        }
+        closeBtn.onclick = closeModal;
+        closeBtn2.onclick = closeModal;
+        window.addEventListener('click', (event) => {
+          if (event.target == noticeModal) {
+            closeModal();
+          }
+        });
+
+        // 페이지 로드 시 localStorage 대신 notice.json 파일을 읽어옵니다.
+        window.addEventListener('load', () => {
+            fetch('notice.json') // notice.json 파일 요청
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('네트워크 응답이 올바르지 않습니다.');
+                    }
+                    return response.json(); // 응답을 JSON으로 파싱
+                })
+                .then(data => {
+                    const noticeText = data.content; // JSON 파일의 "content" 값을 가져옴
+                    
+                    // 내용이 비어있지 않다면 모달을 띄웁니다.
+                    if (noticeText && noticeText.trim() !== "") {
+                        noticeModalContent.innerText = noticeText; 
+                        noticeModal.style.display = "block";
+                    }
+                })
+                .catch(error => {
+                    // notice.json 파일이 없거나 오류가 발생하면 콘솔에만 에러를 표시합니다.
+                    console.error('안내 파일(notice.json)을 불러오는 데 실패했습니다:', error);
+                });
+        });
+        // ============================================
+
+    </script>
+</body>
+</html>

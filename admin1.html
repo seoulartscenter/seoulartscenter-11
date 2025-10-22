@@ -1,0 +1,122 @@
+"""
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 관리</title>
+    <style>
+        body { 
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif; 
+            background-color: #f4f4f4; 
+            padding: 30px; 
+            color: #333;
+        }
+        .container { 
+            max-width: 700px; 
+            margin: 0 auto; 
+            background-color: #fff; 
+            padding: 25px; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); 
+        }
+        h1 { margin-top: 0; }
+        textarea { 
+            width: 100%; 
+            min-height: 200px; 
+            box-sizing: border-box; 
+            border: 1px solid #ccc; 
+            border-radius: 5px; 
+            padding: 10px; 
+            font-size: 16px; 
+            line-height: 1.6;
+        }
+        .controls { 
+            margin-top: 15px; 
+            display: flex; 
+            justify-content: flex-end; 
+            gap: 10px; 
+        }
+        button { 
+            padding: 10px 20px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        #saveBtn { background-color: #007bff; color: white; }
+        #deleteBtn { background-color: #dc3545; color: white; }
+        #status { margin-top: 15px; font-weight: bold; color: green; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>지원서 페이지 안내창 관리</h1>
+        <p>
+            여기에 내용을 작성하고 '저장'을 누르면 지원서 페이지 접속 시 안내창이 뜹니다.<br>
+            내용을 지우고 저장하거나 '삭제' 버튼을 누르면 안내창이 더 이상 뜨지 않습니다.
+        </p>
+
+        <div class="form-group">
+            <label for="noticeContent" style="font-weight: bold; margin-bottom: 8px; display: block;">안내창 내용</label>
+            <textarea id="noticeContent" placeholder="안내할 내용을 입력하세요... (줄바꿈 <br> 태그 사용 가능)"></textarea>
+        </div>
+
+        <div class="controls">
+            <button id="saveBtn">저장하기</button>
+            <button id="deleteBtn">안내창 삭제</button>
+        </div>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const noticeContent = document.getElementById('noticeContent');
+        const saveBtn = document.getElementById('saveBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const statusEl = document.getElementById('status');
+        
+        // localStorage에 사용할 키 이름
+        const storageKey = 'applicationNotice';
+
+        // 1. 페이지 로드 시: 저장된 내용이 있으면 textarea에 불러오기
+        window.onload = function() {
+            const savedNotice = localStorage.getItem(storageKey);
+            if (savedNotice) {
+                noticeContent.value = savedNotice;
+                statusEl.textContent = "최근 저장된 내용을 불러왔습니다.";
+                setTimeout(() => statusEl.textContent = "", 3000);
+            }
+        };
+
+        // 2. 저장 버튼 클릭 시
+        saveBtn.onclick = function() {
+            const content = noticeContent.value;
+            if (content.trim() === "") {
+                // 내용이 비어있으면 삭제하는 것과 동일하게 처리
+                localStorage.removeItem(storageKey);
+                statusEl.textContent = "내용이 비어있어 안내창이 삭제(비활성)되었습니다.";
+            } else {
+                // 내용이 있으면 저장
+                localStorage.setItem(storageKey, content);
+                statusEl.textContent = "저장되었습니다! 지원서 페이지에서 확인하세요.";
+            }
+            setTimeout(() => statusEl.textContent = "", 3000);
+        };
+
+        // 3. 삭제 버튼 클릭 시
+        deleteBtn.onclick = function() {
+            if (confirm("정말로 안내창을 삭제하시겠습니까?")) {
+                localStorage.removeItem(storageKey);
+                noticeContent.value = "";
+                statusEl.textContent = "안내창이 삭제되었습니다.";
+                setTimeout(() => statusEl.textContent = "", 3000);
+            }
+        };
+    </script>
+
+</body>
+</html>
+"""

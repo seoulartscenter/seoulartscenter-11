@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지원자 현황 대시보드</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 90vh;
+            background-color: #f4f7f6;
+            color: #333;
+            padding-top: 40px;
+            margin: 0;
+        }
+        h1 {
+            color: #222;
+            font-weight: 600;
+            margin-bottom: 10px; /* 간격 조정 */
+        }
+        /* ✅ 추가된 스타일 */
+        .dashboard-subtitle, .limit-status-message {
+            text-align: center;
+            color: #666;
+            margin: 4px 0 30px 0;
+        }
+        .limit-status-message {
+            color: #28a745; /* 초록색 */
+            font-weight: bold;
+            height: 1.2em; /* 공간 확보 */
+        }
+
+        .status-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 700px;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+        .status-item {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+        .label {
+            display: block;
+            font-size: 1.1rem;
+            color: #555;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        .value {
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1;
+        }
+        .unit {
+            font-size: 1.5rem;
+            color: #444;
+            margin-left: 8px;
+            font-weight: 500;
+        }
+        .status-item.total {
+            grid-column: 1 / -1;
+            border-top: 4px solid #007bff;
+        }
+        .status-item.total .value { color: #007bff; }
+        .status-item.final {
+            grid-column: 1 / -1;
+            border-top: 4px solid #28a745;
+        }
+        .status-item.final .value { color: #28a745; }
+        .manual-counter {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 5px;
+        }
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid #ddd;
+            background-color: #f8f9fa;
+            color: #333;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            transition: background-color 0.2s;
+        }
+        .counter-btn:hover { background-color: #e9ecef; }
+        .manual-counter .value { font-size: 3rem; }
+        .manual-counter .unit { font-size: 1.2rem; }
+
+        .button-container {
+            margin-top: 30px;
+            display: flex;
+            gap: 10px;
+        }
+        .action-btn {
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid;
+            transition: background-color 0.2s, color 0.2s;
+        }
+        #reset-counts-btn {
+            color: #dc3545;
+            background-color: #ffffff;
+            border-color: #dc3545;
+        }
+        #reset-counts-btn:hover {
+            background-color: #f8f9fa;
+        }
+        #open-announce-btn {
+            color: #007bff;
+            background-color: #ffffff;
+            border-color: #007bff;
+        }
+        #open-announce-btn:hover {
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 600px) {
+            .status-container { grid-template-columns: 1fr; }
+            h1 { font-size: 1.8rem; }
+            .value { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>지원자 현황 대시보드 📊</h1>
+    <!-- ✅ 최대 인원 및 상태 메시지 표시 영역 -->
+    <p class="dashboard-subtitle">최대 지원 인원: <span id="max-applicants-display">100</span>명</p>
+    <p id="limit-status" class="limit-status-message"></p>
+
+    <div class="status-container">
+        <div class="status-item total">
+            <span class="label">총 지원자</span>
+            <div>
+                <span class="value" id="total-applicants-value">0</span>
+                <span class="unit">명</span>
+            </div>
+        </div>
+        <div class="status-item">
+            <span class="label">미확인 인원</span>
+            <div>
+                <span class="value" id="unchecked-value">0</span>
+                <span class="unit">명</span>
+            </div>
+        </div>
+        <div class="status-item">
+            <span class="label">확인 인원</span>
+            <div class="manual-counter">
+                <button type="button" class="counter-btn" id="checked-minus-btn">-</button>
+                <span class="value" id="checked-value">0</span>
+                <span class="unit">명</span>
+                <button type="button" class="counter-btn" id="checked-plus-btn">+</button>
+            </div>
+        </div>
+        <div class="status-item">
+            <span class="label">2차 면접자 선발</span>
+            <div class="manual-counter">
+                <button type="button" class="counter-btn" id="interview-minus-btn">-</button>
+                <span class="value" id="interview-value">0</span>
+                <span class="unit">명</span>
+                <button type="button" class="counter-btn" id="interview-plus-btn">+</button>
+            </div>
+        </div>
+        <div class="status-item">
+            <span class="label">합격자</span>
+            <div class="manual-counter">
+                <button type="button" class="counter-btn" id="waitlist-minus-btn">-</button>
+                <span class="value" id="waitlist-value">0</span>
+                <span class="unit">명</span>
+                <button type="button" class="counter-btn" id="waitlist-plus-btn">+</button>
+            </div>
+        </div>
+        <div class="status-item final">
+            <span class="label">최종 합격 통보</span>
+            <div class="manual-counter">
+                <button type="button" class="counter-btn" id="final-pass-minus-btn">-</button>
+                <span class="value" id="final-pass-value">0</span>
+                <span class="unit">명</span>
+                <button type="button" class="counter-btn" id="final-pass-plus-btn">+</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-container">
+        <button id="reset-counts-btn" class="action-btn">모든 카운트 초기화</button>
+        <button id="open-announce-btn" class="action-btn">안내창 열기</button>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, updateDoc, increment, setDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const firebaseConfig = {
+                apiKey: "AIzaSyBla6JF-sKsnBvz0FAw6g4wSEBTWrl_NRs",
+                authDomain: "jh03-47811.firebaseapp.com",
+                databaseURL: "https://jh03-47811-default-rtdb.firebaseio.com",
+                projectId: "jh03-47811",
+                storageBucket: "jh03-47811.appspot.com",
+                messagingSenderId: "465663580723",
+                appId: "1:465663580723:web:b2628e2036250b1e8a2146",
+                measurementId: "G-7MLE33LM11"
+            };
+
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    initializeDashboard(db);
+                } else {
+                    signInAnonymously(auth);
+                }
+            });
+
+            function initializeDashboard(db) {
+                const appId = 'default-dashboard';
+                const docRef = doc(db, `artifacts/${appId}/public/data/dashboard`, "counts");
+
+                const elements = {
+                    total: document.getElementById('total-applicants-value'),
+                    unchecked: document.getElementById('unchecked-value'),
+                    checked: document.getElementById('checked-value'),
+                    interview: document.getElementById('interview-value'),
+                    waitlist: document.getElementById('waitlist-value'),
+                    finalPass: document.getElementById('final-pass-value'),
+                };
+                
+                // ✅ 최대 인원 설정
+                const MAX_APPLICANTS = 110000;
+                const limitStatusElement = document.getElementById('limit-status');
+                document.getElementById('max-applicants-display').textContent = MAX_APPLICANTS;
+                let autoUpdateInterval = null; // 인터벌 ID를 저장할 변수
+
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        Object.keys(elements).forEach(key => {
+                            elements[key].textContent = data[key] || 0;
+                        });
+                        
+                        // ✅ 데이터 로드 시 최대 인원 확인
+                        if (parseInt(elements.total.textContent, 10) >= MAX_APPLICANTS) {
+                            limitStatusElement.textContent = "✅ 최대 지원 인원에 도달하여 자동 접수가 마감되었습니다.";
+                            if(autoUpdateInterval) clearInterval(autoUpdateInterval);
+                        }
+
+                    } else {
+                        resetCounts();
+                    }
+                }, (error) => {
+                    console.error("Snapshot listener error:", error);
+                });
+
+                // ✅ 최대 인원 제한 로직이 포함된 자동 증가 함수
+                autoUpdateInterval = setInterval(async () => {
+                    const currentTotal = parseInt(elements.total.textContent, 10);
+
+                    if (currentTotal >= MAX_APPLICANTS) {
+                        limitStatusElement.textContent = "✅ 최대 지원 인원에 도달하여 자동 접수가 마감되었습니다.";
+                        clearInterval(autoUpdateInterval); // 인터벌 중지
+                        return;
+                    }
+
+                    const remainingSlots = MAX_APPLICANTS - currentTotal;
+                    let randomIncrement = Math.floor(Math.random() * 5) + 1;
+                    if (randomIncrement > remainingSlots) {
+                        randomIncrement = remainingSlots;
+                    }
+
+                    try {
+                        const batch = writeBatch(db);
+                        batch.update(docRef, {
+                            total: increment(randomIncrement),
+                            unchecked: increment(randomIncrement)
+                        });
+                        await batch.commit();
+                    } catch (error) {
+                        console.error("Automatic update failed:", error);
+                    }
+                }, 10000);
+
+                document.getElementById('checked-plus-btn').addEventListener('click', async () => {
+                    if (parseInt(elements.unchecked.textContent, 10) > 0) {
+                        const batch = writeBatch(db);
+                        batch.update(docRef, {
+                            unchecked: increment(-1),
+                            checked: increment(1)
+                        });
+                        await batch.commit();
+                    }
+                });
+                
+                document.getElementById('checked-minus-btn').addEventListener('click', async () => {
+                    if (parseInt(elements.checked.textContent, 10) > 0) {
+                        const batch = writeBatch(db);
+                        batch.update(docRef, {
+                            checked: increment(-1),
+                            unchecked: increment(1)
+                        });
+                        await batch.commit();
+                    }
+                });
+
+                async function updateCount(field, amount) {
+                    if (parseInt(elements[field].textContent, 10) + amount < 0) { return; }
+                    try {
+                        await updateDoc(docRef, { [field]: increment(amount) });
+                    } catch (error) {
+                        console.error(`Update failed for '${field}':`, error);
+                    }
+                }
+
+                document.getElementById('interview-plus-btn').addEventListener('click', () => updateCount('interview', 1));
+                document.getElementById('interview-minus-btn').addEventListener('click', () => updateCount('interview', -1));
+                document.getElementById('waitlist-plus-btn').addEventListener('click', () => updateCount('waitlist', 1));
+                document.getElementById('waitlist-minus-btn').addEventListener('click', () => updateCount('waitlist', -1));
+                document.getElementById('final-pass-plus-btn').addEventListener('click', () => updateCount('finalPass', 1));
+                document.getElementById('final-pass-minus-btn').addEventListener('click', () => updateCount('finalPass', -1));
+
+                async function resetCounts() {
+                    const initialData = { total: 0, unchecked: 0, checked: 0, interview: 0, waitlist: 0, finalPass: 0 };
+                    await setDoc(docRef, initialData);
+                    // ✅ 초기화 후 상태 메시지도 초기화
+                    limitStatusElement.textContent = ""; 
+                }
+                
+                document.getElementById('reset-counts-btn').addEventListener('click', () => {
+                    const password = prompt("초기화를 위해 관리자 암호를 입력하세요:");
+                    if (password !== null) {
+                        if (password === "gmail1324#") {
+                            resetCounts();
+                        } else {
+                            alert("암호가 올바르지 않습니다.");
+                        }
+                    }
+                });
+
+                document.getElementById('open-announce-btn').addEventListener('click', () => {
+                    window.open('announce.html', 'Announcement', 'width=600,height=400');
+                });
+            }
+        });
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 로그인</title>
+    <style>
+        body {
+            font-family: 'Malgun Gothic', '맑은 고딕', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+        .login-container {
+            max-width: 450px;
+            width: 100%;
+            padding: 35px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            border-radius: 8px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+        select, input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box; 
+        }
+        button {
+            width: 100%;
+            padding: 12px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <h1>관리자 로그인</h1>
+        
+        <div class="form-group">
+            <label for="adminType">관리자 선택</label>
+            <select id="adminType">
+                <option value="" disabled selected>로그인할 계정을 선택하세요</option>
+                <option value="admin">관리자 (인원 집계)</option>
+                <option value="admin1">관리자1 (안내 편집)</option>
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="adminPass">암호</label>
+            <input type="password" id="adminPass" placeholder="암호를 입력하세요">
+        </div>
+        
+        <button id="loginBtn">로그인</button>
+    </div>
+
+    <script>
+        document.getElementById('loginBtn').addEventListener('click', () => {
+            const selectedAdmin = document.getElementById('adminType').value;
+            const enteredPass = document.getElementById('adminPass').value;
+            const correctPass = "gmail1324#"; // 설정된 암호
+
+            if (!selectedAdmin) {
+                alert('로그인할 계정을 선택해주세요.');
+                return;
+            }
+
+            if (enteredPass === correctPass) {
+                // [수정] 선택한 값에 따라 이동할 파일 이름 변경
+                if (selectedAdmin === 'admin') {
+                    // '관리자 (인원 집계)' 선택 시
+                    alert('인원 집계 페이지로 이동합니다.');
+                    window.location.href = 'admin.html'; // admin.html로 이동
+                } else if (selectedAdmin === 'admin1') {
+                    // '관리자1 (안내 편집)' 선택 시
+                    alert('안내 편집 페이지로 이동합니다.');
+                    window.location.href = 'admin1.html'; // admin1.html로 이동
+                }
+            } else {
+                alert('암호가 올바르지 않습니다.');
+            }
+        });
+    </script>
+
+</body>
+</html>
